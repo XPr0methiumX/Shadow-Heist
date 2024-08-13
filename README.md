@@ -5,7 +5,7 @@
 
 Install Yarn
 ``` bash
-npm i --global yarn
+npm i -g yarn
 ``` 
 ## Run Locally - CLI
 
