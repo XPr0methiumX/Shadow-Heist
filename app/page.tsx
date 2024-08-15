@@ -28,13 +28,13 @@ export default function Page() {
 
   // <Avatar position={[0,-1,0]} rotation = {[0,Math.PI,0]}/> 
   // <Guard position={[0,-0.96,0]} scale={1.25}/>
+  // <Exhibition position={[0,-1,0]}/>
   return (
     <>
       <View orbit className='relative size-full'>
         <Suspense fallback={null}>
           <Common color={'lightblue'}/>
           <Nick position={[0, -0.975,-1]} scale={1}/>
-          <Exhibition position={[0,-1,0]}/>
         </Suspense>
       </View>
     </>

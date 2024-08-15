@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import React, { useRef } from 'react'
+import React from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 
@@ -9,10 +9,12 @@ type GLTFResult = GLTF & {
     ['doors_Material_#32272_0']: THREE.Mesh
     ['structural_Material_#32273_0']: THREE.Mesh
     ['roofrack_A_Material_#32269_0']: THREE.Mesh
+    ['roofrack_A_Material_#32269_0_1']: THREE.Mesh
     ['beamlights_Material_#32274_0']: THREE.Mesh
     ['wall_props_Material_#32268_0']: THREE.Mesh
     ['concrete_Material_#32275_0']: THREE.Mesh
     ['ceiling_props_Material_#32277_0']: THREE.Mesh
+    ['ceiling_props_Material_#32277_0_1']: THREE.Mesh
     ['roof_Material_#32278_0']: THREE.Mesh
     ['windowframes_Material_#32279_0']: THREE.Mesh
     ['walls_B_Material_#32280_0']: THREE.Mesh
@@ -52,33 +54,43 @@ type GLTFResult = GLTF & {
   }
 }
 
-type ContextType = Record<string, React.ForwardRefExoticComponent<JSX.IntrinsicElements['mesh']>>
-
 export function Exhibition(props: JSX.IntrinsicElements['group']) {
   const { nodes, materials } = useGLTF('/models/Exhibition.glb') as GLTFResult
   return (
     <group {...props} dispose={null}>
-      <mesh geometry={nodes['walls_C_Material_#32270_0'].geometry} material={materials.Material_32270} position={[10.867, -11.239, 1.407]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['doors_Material_#32272_0'].geometry} material={materials.Material_32272} position={[-7.965, 0.038, 2.346]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['structural_Material_#32273_0'].geometry} material={materials.Material_32273} position={[-0.804, 3.262, 7.256]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['roofrack_A_Material_#32269_0'].geometry} material={materials.Material_32269} position={[1.6, -0.038, 3.409]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['beamlights_Material_#32274_0'].geometry} material={materials.Material_32274} position={[4.987, 5.525, -3.449]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['wall_props_Material_#32268_0'].geometry} material={materials.Material_32268} position={[-4.352, -0.012, 3.753]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['concrete_Material_#32275_0'].geometry} material={materials.Material_32275} position={[10.867, -11.391, 1.407]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['ceiling_props_Material_#32277_0'].geometry} material={materials.Material_32277} position={[7.045, 2.069, -0.389]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['roof_Material_#32278_0'].geometry} material={materials.Material_32278} position={[10.881, -11.239, 1.407]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['windowframes_Material_#32279_0'].geometry} material={materials.Material_32279} position={[-0.804, 3.262, 7.256]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['walls_B_Material_#32280_0'].geometry} material={materials.Material_32280} position={[10.867, -11.239, 1.407]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['walls_A_Material_#32281_0'].geometry} material={materials.Material_32281} position={[10.867, -11.239, 1.407]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['roofrack_B_Material_#32282_0'].geometry} material={materials.Material_32282} position={[-0.804, 3.262, 7.256]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['table001_Material_#32407_0'].geometry} material={materials.Material_32407} position={[8.516, 1.096, -0.466]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['table004_Material_#32284_0'].geometry} material={materials.Material_32284} position={[-8.158, 1.096, -3.222]} rotation={[-Math.PI / 2, 0, -2.241]} scale={0.01} />
-      <mesh geometry={nodes['base_bottom_Material_#32289_0'].geometry} material={materials.Material_32289} position={[0.29, -2.796, 0.152]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['base_Material_#32290_0'].geometry} material={materials.Material_32290} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['floor_Material_#32287_0'].geometry} material={materials.Material_32287} position={[10.867, -11.239, 1.407]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
-      <mesh geometry={nodes['art3_Material_#32286_0'].geometry} material={materials.Material_32286} position={[-12.408, 2.981, 2.212]} rotation={[Math.PI, 0, -Math.PI]} scale={0.01} />
-      <mesh geometry={nodes['art1_Material_#32285_0'].geometry} material={materials.Material_32285} position={[-12.408, 2.981, 2.212]} rotation={[Math.PI, 0, -Math.PI]} scale={0.01} />
-      <mesh geometry={nodes['art_2_Material_#32288_0'].geometry} material={materials.Material_32288} position={[-12.408, 2.981, 2.212]} rotation={[Math.PI, 0, -Math.PI]} scale={0.01} />
+      <group scale={0.01}>
+        <group position={[159.987, -3.786, 340.865]} rotation={[-Math.PI / 2, 0, 0]}>
+          <mesh geometry={nodes['roofrack_A_Material_#32269_0'].geometry} material={materials.Material_32269} />
+          <mesh geometry={nodes['roofrack_A_Material_#32269_0_1'].geometry} material={materials.Material_32269} />
+        </group>
+        <group position={[0, -15.2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <mesh geometry={nodes['concrete_Material_#32275_0'].geometry} material={materials.Material_32275} position={[1086.705, -140.729, -1123.926]} />
+        </group>
+        <group position={[704.5, 206.888, -38.865]} rotation={[-Math.PI / 2, 0, 0]}>
+          <mesh geometry={nodes['ceiling_props_Material_#32277_0'].geometry} material={materials.Material_32277} />
+          <mesh geometry={nodes['ceiling_props_Material_#32277_0_1'].geometry} material={materials.Material_32277} />
+        </group>
+        <group position={[28.964, -30.5, 15.203]} rotation={[-Math.PI / 2, 0, 0]}>
+          <mesh geometry={nodes['base_bottom_Material_#32289_0'].geometry} material={materials.Material_32289} position={[0, 0, -249.065]} />
+        </group>
+        <mesh geometry={nodes['walls_C_Material_#32270_0'].geometry} material={materials.Material_32270} position={[1086.705, -1123.926, 140.729]} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['doors_Material_#32272_0'].geometry} material={materials.Material_32272} position={[-796.547, 3.834, 234.561]} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['structural_Material_#32273_0'].geometry} material={materials.Material_32273} position={[-80.36, 326.16, 725.639]} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['beamlights_Material_#32274_0'].geometry} material={materials.Material_32274} position={[498.671, 552.474, -344.939]} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['wall_props_Material_#32268_0'].geometry} material={materials.Material_32268} position={[-435.206, -1.246, 375.314]} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['roof_Material_#32278_0'].geometry} material={materials.Material_32278} position={[1088.083, -1123.926, 140.729]} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['windowframes_Material_#32279_0'].geometry} material={materials.Material_32279} position={[-80.36, 326.16, 725.639]} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['walls_B_Material_#32280_0'].geometry} material={materials.Material_32280} position={[1086.705, -1123.926, 140.729]} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['walls_A_Material_#32281_0'].geometry} material={materials.Material_32281} position={[1086.705, -1123.926, 140.729]} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['roofrack_B_Material_#32282_0'].geometry} material={materials.Material_32282} position={[-80.36, 326.16, 725.639]} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['table001_Material_#32407_0'].geometry} material={materials.Material_32407} position={[851.556, 109.596, -46.605]} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['table004_Material_#32284_0'].geometry} material={materials.Material_32284} position={[-815.847, 109.596, -322.193]} rotation={[-Math.PI / 2, 0, -2.241]} />
+        <mesh geometry={nodes['base_Material_#32290_0'].geometry} material={materials.Material_32290} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['floor_Material_#32287_0'].geometry} material={materials.Material_32287} position={[1086.705, -1123.926, 140.729]} rotation={[-Math.PI / 2, 0, 0]} />
+        <mesh geometry={nodes['art3_Material_#32286_0'].geometry} material={materials.Material_32286} position={[-1240.757, 298.143, 221.167]} rotation={[Math.PI, 0, -Math.PI]} />
+        <mesh geometry={nodes['art1_Material_#32285_0'].geometry} material={materials.Material_32285} position={[-1240.757, 298.143, 221.167]} rotation={[Math.PI, 0, -Math.PI]} />
+        <mesh geometry={nodes['art_2_Material_#32288_0'].geometry} material={materials.Material_32288} position={[-1240.757, 298.143, 221.167]} rotation={[Math.PI, 0, -Math.PI]} />
+      </group>
     </group>
   )
 }
