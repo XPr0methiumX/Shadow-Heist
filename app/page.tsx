@@ -45,7 +45,8 @@ export default function Page() {
       <View orbit className='relative size-full'>
         <Common/>
         <Physics debug>
-          <Nick/>
+          <Exhibition position={[0, -1, 0]} />
+          {isExhibitionReady && <Nick/>} 
         </Physics>
       </View>
     </>
