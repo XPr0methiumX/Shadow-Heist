@@ -1,12 +1,13 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
+import { Physics } from '@react-three/rapier'
 
 const Avatar = dynamic(() => import('@/components/canvas/models/Avatar').then((model) => model.Avatar), { ssr: false })
 const Exhibition = dynamic(() => import ('@/components/canvas/models/Exhibition').then((model) => model.Exhibition), { ssr: false })
 const Guard = dynamic(() => import('@/components/canvas/models/Guard').then((model) => model.Guard), { ssr: false })
-const Nick = dynamic(() => import('@/components/canvas/models/Nick').then((model) => model.Nick), { ssr: false })
+const Nick = dynamic(() => import('@/helpers/components/CharacterController').then((model) => model.CharacterController), { ssr: false })
 const View = dynamic(() => import('@/components/canvas/View').then((model) => model.View), {
   ssr: false,
   loading: () => (
@@ -25,17 +26,27 @@ const View = dynamic(() => import('@/components/canvas/View').then((model) => mo
 const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })
 
 export default function Page() {
+  const [isExhibitionReady, setIsExhibitionReady] = useState(false)
 
-  // <Avatar position={[0,-1,0]} rotation = {[0,Math.PI,0]}/> 
-  // <Guard position={[0,-0.96,0]} scale={1.25}/>
-  // <Exhibition position={[0,-1,0]}/>
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsExhibitionReady(true)
+    }, 4000) // Simulate loading time
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  /**
+          <Exhibition position={[0, -1, 0]} />
+          {isExhibitionReady && <Nick/>} 
+  */
   return (
     <>
       <View orbit className='relative size-full'>
-        <Suspense fallback={null}>
-          <Common color={'lightblue'}/>
-          <Nick position={[0, -0.975,-1]} scale={1}/>
-        </Suspense>
+        <Common/>
+        <Physics debug>
+          <Nick/>
+        </Physics>
       </View>
     </>
   )

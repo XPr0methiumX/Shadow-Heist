@@ -1,9 +1,8 @@
 import * as THREE from 'three'
-import React, { useEffect, useMemo, useState, useRef } from 'react'
-import { useGraph, useFrame, useThree } from '@react-three/fiber'
+import React, { useEffect, useMemo, useRef } from 'react'
+import { useGraph } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { GLTF, SkeletonUtils } from 'three-stdlib'
-
 
 type ActionName = 'idle' | '180 turn' | 'dying' | 'hit reaction' | 'jump' | 'leftturn' | 'rightturn' | 'run' | 'walking' | 'gun shoot'
 
@@ -94,114 +93,23 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[]
 }
 
+export function Nick({ animation, ...props }) {
+  const group = useRef<THREE.Group>(null)
+  const { scene, animations } = useGLTF('/models/Main-transformed.glb')
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene])
+  const { nodes, materials } = useGraph(clone) as GLTFResult
+  const { actions } = useAnimations(animations, group)
 
-export function Nick(props: JSX.IntrinsicElements['group']) {
-  const group = useRef<THREE.Group>();
-  const { scene, animations } = useGLTF('/models/Main-transformed.glb');
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { nodes, materials } = useGraph(clone) as GLTFResult;
-  const { actions } = useAnimations(animations, group);
-  const [movementState, setMovementState] = useState<'idle' | 'walking' | 'run' | 'rightturn' | 'leftturn'>('idle');
-
-  // Flag to track if a turn animation is currently playing
-  const [isTurning, setIsTurning] = useState(false);
-
-  // Get the camera from the Three.js scene
-  const { camera } = useThree();
-
-  // Create a ref for the camera target
-  const cameraTarget = useRef(new THREE.Vector3());
 
   useEffect(() => {
-    group.current.rotation.y = Math.PI;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() === 'w') {
-        setMovementState(event.shiftKey ? 'run' : 'walking');
-      }
-
-      if (event.key.toLowerCase() === 'd' && !isTurning) {
-        setMovementState('rightturn');
-        setIsTurning(true);
-      }
-
-      if (event.key.toLowerCase() === 'a' && !isTurning) {
-        setMovementState('leftturn');
-        setIsTurning(true);
-      }
-    };
-
-    const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() === 'w') {
-        setMovementState('idle');
-      }
-
-      // Do not reset the movement state on key up for 'a' or 'd'
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [isTurning]);
+    group.current.rotation.y = Math.PI
+  })
 
   useEffect(() => {
-    // Stop all actions
-    Object.values(actions).forEach(action => action.stop());
+    actions[animation]?.reset().fadeIn(0.24).play()
+    return () => actions?.[animation]?.fadeOut(0.24) as unknown as void
+  }, [animation])
 
-    // Play the current action
-    const currentAction = actions[movementState === 'run' ? 'run' : movementState];
-    if (currentAction) {
-      currentAction.reset().fadeIn(0.2).play();
-
-      // If the action is a turn, set the duration
-      if (movementState === 'rightturn' || movementState === 'leftturn') {
-        currentAction.setLoop(THREE.LoopOnce, 1); // Play once
-        currentAction.clampWhenFinished = true; // Clamp to the last frame
-      }
-    }
-
-    return () => {
-      if (currentAction) {
-        currentAction.fadeOut(0.2);
-      }
-    };
-  }, [actions, movementState]);
-
-  useFrame(() => {
-    if (group.current) {
-      switch (movementState) {
-        case 'walking':
-          group.current.position.z -= 0.01;
-          break;
-        case 'run':
-          group.current.position.z -= 0.03;
-          break;
-      }
-
-      // Update camera target to follow the character
-      cameraTarget.current.copy(group.current.position);
-      cameraTarget.current.y += 1.5; // Adjust this value for camera height
-
-      // Smoothly move the camera to follow the target
-      camera.position.lerp(cameraTarget.current, 0.1);
-      camera.position.z = group.current.position.z + 2.8; // Keep the camera behind the character
-      camera.position.x = group.current.position.x; // Align camera with character's x position
-
-      // Make the camera look at the character
-      camera.lookAt(cameraTarget.current);
-    }
-
-    // Check if the current action is a turn animation and reset state if finished
-    const currentAction = actions[movementState];
-    if (isTurning && currentAction && currentAction.isRunning() === false) {
-      setIsTurning(false); // Reset the turning flag
-      setMovementState('idle'); // Set to idle after the turn
-    }
-  });
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
