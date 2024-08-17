@@ -1,7 +1,7 @@
 import { Nick } from "@/components/canvas/models/Nick"
 import { RigidBody, CapsuleCollider } from "@react-three/rapier"
 import * as THREE from "three"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useFrame } from "@react-three/fiber"
 import { useControls } from "leva"
 import { useKeyboardControls } from "@react-three/drei"
@@ -44,6 +44,7 @@ export const CharacterController = () => {
     const rb = useRef(null)
     const container = useRef(null)
     const nick = useRef(null)
+    const capsuleColliderRef = useRef(null)
     const [animation, setAnimation] = useState("idle")
 
     useFrame(({camera}) => {
@@ -76,8 +77,16 @@ export const CharacterController = () => {
                 const characterRotationTarget = Math.atan2(-movement.x, -movement.z)
 
                 // Set rotation instantly but allow for smooth transition
-                nick.current.rotation.y = lerpAngle(nick.current.rotation.y, characterRotationTarget, ROTATION_SPEED);
+                nick.current.rotation.y = lerpAngle(nick.current.rotation.y, characterRotationTarget, ROTATION_SPEED)
+
+                // Update capsule collider rotation
+                capsuleColliderRef.current.setRotation({ x: 0, y: nick.current.rotation.y, z: 0 })
             }
+
+            // Update capsule collider position
+            const nickWorldPosition = new THREE.Vector3()
+            nick.current.getWorldPosition(nickWorldPosition)
+            capsuleColliderRef.current.setTranslation(nickWorldPosition)
 
             // Set animation based on speed and movement
             if (vel.length() === 0) {
@@ -103,10 +112,10 @@ export const CharacterController = () => {
         <RigidBody gravityScale={0} colliders={false} lockRotations ref={rb}>
             <group ref={container}>
                 <group ref={nick}>
-                    <Nick position={[0, -0.975, -1]} scale={1} animation={animation} />
+                    <Nick position={[0, -0.975, 0]} scale={1} animation={animation} />
                 </group>
             </group>
-            <CapsuleCollider position={[0, 0, -1]} args={[0.45, 0.52]} /> {/* Capsule collider as a child */}
+            <CapsuleCollider ref={capsuleColliderRef} args={[0.45, 0.52]} />
         </RigidBody>
     )
 }
