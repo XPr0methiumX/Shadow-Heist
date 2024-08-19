@@ -1,10 +1,10 @@
 import * as THREE from 'three'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useGraph } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { GLTF, SkeletonUtils } from 'three-stdlib'
 
-type ActionName = 'hook' | 'idle' | 'punch' | 'special' | 'walk'
+type ActionName = 'hit reaction' | 'hook' | 'idle' | 'punch' | 'special' | 'walk'
 
 interface GLTFAction extends THREE.AnimationClip {
   name: ActionName
@@ -40,13 +40,10 @@ type GLTFResult = GLTF & {
 
 export function Guard(props: JSX.IntrinsicElements['group']) {
   const group = React.useRef<THREE.Group>()
-  const { scene, animations } = useGLTF('/models/Guard.glb')
+  const { scene, animations } = useGLTF('/models/Guard-transformed.glb')
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone) as GLTFResult
   const { actions } = useAnimations(animations, group)
-  useEffect(() => {
-    actions["idle"].play()
-  }, [actions])
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">

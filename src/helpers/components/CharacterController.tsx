@@ -30,8 +30,8 @@ const lerpAngle = (start, end, t) => {
 
 export const CharacterController = () => {
     const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED } = useControls("Character Control", {
-        WALK_SPEED: { value: 0.9, min: 0.1, max: 4, step: 0.1 },
-        RUN_SPEED: { value: 1.8, min: 0.2, max: 8, step: 0.1 },
+        WALK_SPEED: { value: 1.2, min: 0.1, max: 4, step: 0.1 },
+        RUN_SPEED: { value: 2.5, min: 0.2, max: 8, step: 0.1 },
         ROTATION_SPEED: {
             value: degToRad(9), // Increased rotation speed for faster turning
             min: degToRad(0.1),
@@ -109,13 +109,13 @@ export const CharacterController = () => {
     })
 
     return (
-        <RigidBody gravityScale={0} colliders={false} lockRotations ref={rb}>
+        <RigidBody colliders={false} lockRotations ref={rb}>
             <group ref={container}>
                 <group ref={nick}>
                     <Nick position={[0, -0.975, 0]} scale={1} animation={animation} />
                 </group>
             </group>
-            <CapsuleCollider ref={capsuleColliderRef} args={[0.45, 0.52]} />
+            <CapsuleCollider ref={capsuleColliderRef} position={[0,-0.1,0]} args={[0.45, 0.42]} />
         </RigidBody>
     )
 }

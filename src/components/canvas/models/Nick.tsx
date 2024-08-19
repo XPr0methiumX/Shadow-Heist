@@ -1,10 +1,10 @@
 import * as THREE from 'three'
-import React, { useEffect, useMemo, useRef } from 'react'
+import React, { useEffect } from 'react'
 import { useGraph } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { GLTF, SkeletonUtils } from 'three-stdlib'
 
-type ActionName = 'idle' | '180 turn' | 'dying' | 'hit reaction' | 'jump' | 'leftturn' | 'rightturn' | 'run' | 'walking' | 'gun shoot'
+type ActionName = 'idle' | 'dying' | 'hit reaction' | 'jump' | 'run' | 'walking' | 'gun shoot' | 'crouch idle'
 
 interface GLTFAction extends THREE.AnimationClip {
   name: ActionName
@@ -93,19 +93,17 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[]
 }
 
-
 type NickProps = {
   animation?: string, 
   [key: string]: any 
 }
 
 export function Nick({ animation, ...props }: NickProps) {
-  const group = useRef<THREE.Group>(null)
+  const group = React.useRef<THREE.Group>()
   const { scene, animations } = useGLTF('/models/Main-transformed.glb')
-  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene])
+  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone) as GLTFResult
   const { actions } = useAnimations(animations, group)
-
 
   useEffect(() => {
     group.current.rotation.y = Math.PI
@@ -115,7 +113,7 @@ export function Nick({ animation, ...props }: NickProps) {
     actions[animation]?.reset().fadeIn(0.24).play()
     return () => actions?.[animation]?.fadeOut(0.24) as unknown as void
   }, [animation])
-
+  
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">

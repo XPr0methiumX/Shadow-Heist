@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic'
 import { Suspense, useEffect, useState } from 'react'
 import { Physics } from '@react-three/rapier'
 
-const Avatar = dynamic(() => import('@/components/canvas/models/Avatar').then((model) => model.Avatar), { ssr: false })
 const Exhibition = dynamic(() => import ('@/components/canvas/models/Exhibition').then((model) => model.Exhibition), { ssr: false })
 const Guard = dynamic(() => import('@/components/canvas/models/Guard').then((model) => model.Guard), { ssr: false })
 const Nick = dynamic(() => import('@/helpers/components/CharacterController').then((model) => model.CharacterController), { ssr: false })
@@ -31,7 +30,7 @@ export default function Page() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsExhibitionReady(true)
-    }, 4000) // Simulate loading time
+    }, 6000) // Simulate loading time
 
     return () => clearTimeout(timer)
   }, [])
@@ -45,7 +44,8 @@ export default function Page() {
       <View orbit className='relative size-full'>
         <Common/>
         <Physics debug>
-          <Nick/>
+          <Exhibition position={[0, -1, 0]} />
+          {isExhibitionReady && <Nick/>} 
         </Physics>
       </View>
     </>
