@@ -33,7 +33,7 @@ export const CharacterController = () => {
         WALK_SPEED: { value: 0.9, min: 0.1, max: 4, step: 0.1 },
         RUN_SPEED: { value: 1.8, min: 0.2, max: 8, step: 0.1 },
         ROTATION_SPEED: {
-            value: degToRad(1), // Increased rotation speed for faster turning
+            value: degToRad(9), // Increased rotation speed for faster turning
             min: degToRad(0.1),
             max: degToRad(5),
             step: degToRad(0.1),
@@ -89,12 +89,12 @@ export const CharacterController = () => {
             capsuleColliderRef.current.setTranslation(nickWorldPosition)
 
             // Set animation based on speed and movement
-            if (vel.length() === 0) {
+            if (vel.length() === 0 && !get().jump) {
                 setAnimation("idle")
             } else if (get().run) {
                 setAnimation("run")
-            } else if (Math.abs(movement.x) > Math.abs(movement.z)) {
-                setAnimation(movement.x < 0 ? "leftturn" : "rightturn")
+            } else if (get().jump) {
+                setAnimation("jump") 
             } else {
                 setAnimation("walking")
             }

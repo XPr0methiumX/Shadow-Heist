@@ -13,10 +13,10 @@ const keyboardMap = [
   {name: "left", keys: ["ArrowLeft", "KeyA"]},
   {name: "right", keys: ["ArrowRight", "KeyD"]},
   {name: "run", keys: ["Shift"]},
+  {name: "jump", keys: ["Space"] },
 ]
 
 export default function Scene({ ...props }) {
-  // Everything defined in here will persist between route changes, only children are swapped
   return (
     <KeyboardControls map={keyboardMap}>
       <Canvas {...props}

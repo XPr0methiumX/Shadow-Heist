@@ -93,7 +93,13 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[]
 }
 
-export function Nick({ animation, ...props }) {
+
+type NickProps = {
+  animation?: string, 
+  [key: string]: any 
+}
+
+export function Nick({ animation, ...props }: NickProps) {
   const group = useRef<THREE.Group>(null)
   const { scene, animations } = useGLTF('/models/Main-transformed.glb')
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene])
