@@ -30,7 +30,7 @@ export default function Page() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsExhibitionReady(true)
-    }, 6000) // Simulate loading time
+    }, 4000) // Simulate loading time
 
     return () => clearTimeout(timer)
   }, [])
@@ -44,7 +44,8 @@ export default function Page() {
       <View className='relative size-full'>
         <Common/>
         <Physics debug>
-          <Nick/>
+          <Exhibition position={[0, -1, 0]} />
+          {isExhibitionReady && <Nick/>} 
         </Physics>
       </View>
     </>
