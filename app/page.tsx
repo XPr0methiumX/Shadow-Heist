@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { Physics } from '@react-three/rapier'
 
 const Exhibition = dynamic(() => import ('@/components/canvas/models/Exhibition').then((model) => model.Exhibition), { ssr: false })
-const Guard = dynamic(() => import('@/components/canvas/models/Guard').then((model) => model.Guard), { ssr: false })
+const Guard = dynamic(() => import('@/helpers/components/GuardController').then((model) => model.GuardController), { ssr: false })
 const Nick = dynamic(() => import('@/helpers/components/CharacterController').then((model) => model.CharacterController), { ssr: false })
 const View = dynamic(() => import('@/components/canvas/View').then((model) => model.View), {
   ssr: false,
@@ -41,11 +41,10 @@ export default function Page() {
   */
   return (
     <>
-      <View orbit className='relative size-full'>
+      <View className='relative size-full'>
         <Common/>
         <Physics debug>
-          <Exhibition position={[0, -1, 0]} />
-          {isExhibitionReady && <Nick/>} 
+          <Nick/>
         </Physics>
       </View>
     </>

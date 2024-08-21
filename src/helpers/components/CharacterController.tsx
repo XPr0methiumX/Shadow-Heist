@@ -33,7 +33,7 @@ export const CharacterController = () => {
         WALK_SPEED: { value: 1.2, min: 0.1, max: 4, step: 0.1 },
         RUN_SPEED: { value: 2.5, min: 0.2, max: 8, step: 0.1 },
         ROTATION_SPEED: {
-            value: degToRad(9), // Increased rotation speed for faster turning
+            value: degToRad(9),
             min: degToRad(0.1),
             max: degToRad(5),
             step: degToRad(0.1),
@@ -46,8 +46,44 @@ export const CharacterController = () => {
     const nick = useRef(null)
     const capsuleColliderRef = useRef(null)
     const [animation, setAnimation] = useState("idle")
+    const [isRightClick, setIsRightClick] = useState(false)
+    const [mousePosition, setMousePosition] = useState(new THREE.Vector2())
 
-    useFrame(({camera}) => {
+    // Mouse event handlers
+    useEffect(() => {
+        const handleMouseMove = (event) => {
+            if (isRightClick) {
+                setMousePosition(new THREE.Vector2(
+                    (event.clientX / window.innerWidth) * 2 - 1,
+                    -(event.clientY / window.innerHeight) * 2 + 1
+                ));
+            }
+        }
+
+        const handleMouseDown = (event) => {
+            if (event.button === 2) { // Right click
+                setIsRightClick(true);
+            }
+        }
+
+        const handleMouseUp = (event) => {
+            if (event.button === 2) { // Right click
+                setIsRightClick(false);
+            }
+        }
+
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mouseup', handleMouseUp);
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mousedown', handleMouseDown);
+            window.removeEventListener('mouseup', handleMouseUp);
+        }
+    }, [isRightClick]);
+
+    useFrame(({ camera }) => {
         if (rb.current) {
             const vel = new THREE.Vector3()
             const movement = new THREE.Vector3(0, 0, 0)
@@ -73,17 +109,11 @@ export const CharacterController = () => {
 
             // Rotate character based on movement direction
             if (movement.length() > 0) {
-                // Calculate target rotation
                 const characterRotationTarget = Math.atan2(-movement.x, -movement.z)
-
-                // Set rotation instantly but allow for smooth transition
                 nick.current.rotation.y = lerpAngle(nick.current.rotation.y, characterRotationTarget, ROTATION_SPEED)
-
-                // Update capsule collider rotation
                 capsuleColliderRef.current.setRotation({ x: 0, y: nick.current.rotation.y, z: 0 })
             }
 
-            // Update capsule collider position
             const nickWorldPosition = new THREE.Vector3()
             nick.current.getWorldPosition(nickWorldPosition)
             capsuleColliderRef.current.setTranslation(nickWorldPosition)
@@ -102,14 +132,28 @@ export const CharacterController = () => {
             // CAMERA
             const characterPosition = new THREE.Vector3()
             container.current.getWorldPosition(characterPosition)
-            const cameraOffset = new THREE.Vector3(0, 1.5, 5)
-            camera.position.lerp(characterPosition.clone().add(cameraOffset), 0.1)
-            camera.lookAt(characterPosition)
+            const defaultCameraOffset = new THREE.Vector3(0, 1.5, 5); // Normal camera offset
+            const zoomedCameraOffset = new THREE.Vector3(0, 0.5, 5); // Lower zoomed-in camera offset
+
+            if (isRightClick) {
+                // Zoom in towards the character
+                camera.position.lerp(characterPosition.clone().add(zoomedCameraOffset), 0.1);
+                
+                // Aim based on mouse movement
+                const direction = new THREE.Vector3(mousePosition.x, 0, mousePosition.y);
+                direction.unproject(camera);
+                const aimTarget = direction.clone().sub(camera.position).normalize();
+                camera.position.add(aimTarget.multiplyScalar(0.1)); // Adjust this scalar for sensitivity
+            } else {
+                // Return to normal camera position
+                camera.position.lerp(characterPosition.clone().add(defaultCameraOffset), 0.1);
+            }
+            camera.lookAt(characterPosition);
         }
     })
 
     return (
-        <RigidBody colliders={false} lockRotations ref={rb}>
+        <RigidBody gravityScale={0} colliders={false} lockRotations ref={rb}>
             <group ref={container}>
                 <group ref={nick}>
                     <Nick position={[0, -0.975, 0]} scale={1} animation={animation} />

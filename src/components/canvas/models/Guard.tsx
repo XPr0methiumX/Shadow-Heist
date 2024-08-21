@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useGraph } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { GLTF, SkeletonUtils } from 'three-stdlib'
@@ -38,12 +38,27 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[]
 }
 
-export function Guard(props: JSX.IntrinsicElements['group']) {
+type GuardProps = {
+  animation?: string, 
+  [key: string]: any 
+}
+
+export function Guard({ animation, ...props }: GuardProps) {
   const group = React.useRef<THREE.Group>()
   const { scene, animations } = useGLTF('/models/Guard-transformed.glb')
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone) as GLTFResult
   const { actions } = useAnimations(animations, group)
+
+  useEffect(() => {
+    group.current.rotation.y = Math.PI
+  })
+  
+  useEffect(() => {
+    actions[animation]?.reset().fadeIn(0.24).play()
+    return () => actions?.[animation]?.fadeOut(0.24) as unknown as void
+  }, [animation])
+
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
