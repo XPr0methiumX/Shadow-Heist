@@ -7,6 +7,7 @@ import { useControls } from "leva";
 import { useKeyboardControls, OrbitControls } from "@react-three/drei";
 import { degToRad } from "three/src/math/MathUtils";
 import { Projectile } from "@/helpers/components/Projectile";
+import { useGuardContext } from "./GuardContext";
 
 // Normalize angle to be within the range of -PI to PI
 const normalizeAngle = (angle) => {
@@ -54,8 +55,12 @@ export const CharacterController = () => {
     const [isShooting, setIsShooting] = useState(false);
     const [projectiles, setProjectiles] = useState<any[]>([]);
     const [shootCooldown, setShootCooldown] = useState(0); // Cooldown for shooting
+    const { isActive, setIsActive } = useGuardContext();
+    const [guardState, setGuardState] = useState("ACTIVE");
+    const [hits, setHits] = useState(0);
+    const [defeatedTime, setDefeatedTime] = useState<number | null>(null);
 
-    useFrame(({ camera, mouse }) => {
+    useFrame(({ camera, mouse, clock }) => {
         if (rb.current) {
             const vel = new THREE.Vector3();
             const movement = new THREE.Vector3(0, 0, 0);
@@ -148,6 +153,24 @@ export const CharacterController = () => {
             // Update cooldown
             setShootCooldown((prev) => Math.max(0, prev - 1 / 60)); // Reduce cooldown based on frame rate
         }
+
+        switch (guardState) {
+            case "ACTIVE":
+              if (hits >= 15) {
+                setGuardState("DEFEATED"); // Transition to defeated state
+                setIsActive(false); 
+                setDefeatedTime(clock.getElapsedTime()); // Record defeat time
+              }
+              break;
+            case "DEFEATED":
+                if (defeatedTime !== null && clock.getElapsedTime() - defeatedTime >= 3) {
+                    setIsActive(true);
+                    setGuardState("ACTIVE");
+                    setHits(0);
+                    setDefeatedTime(null); // Reset defeatedTime
+                }
+                break;
+        } 
     });
 
     // Event listeners for shooting (Left mouse button only)
@@ -193,7 +216,10 @@ export const CharacterController = () => {
                     key={index}
                     position={proj.position}
                     velocity={proj.velocity}
-                    onHit={() => console.log("Hit!")}
+                    onHit={() => {
+                        console.log("Hit!")
+                        setHits((prevHits) => prevHits + 1);
+                    }}
                 />
             ))}
         </>

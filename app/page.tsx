@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import { Suspense, useEffect, useState } from 'react'
 import { Physics } from '@react-three/rapier'
+import { GuardProvider } from '@/helpers/components/GuardContext'
 
 const Exhibition = dynamic(() => import ('@/components/canvas/models/Exhibition').then((model) => model.Exhibition), { ssr: false })
 const Guard = dynamic(() => import('@/helpers/components/GuardController').then((model) => model.GuardController), { ssr: false })
@@ -35,17 +36,15 @@ export default function Page() {
     return () => clearTimeout(timer)
   }, [])
 
-  /**
-          <Exhibition position={[0, -1, 0]} />
-          {isExhibitionReady && <Nick/>} 
-  */
   return (
     <>
       <View className='relative size-full'>
-        <Common/>
+        <Common />
         <Physics debug>
-          <Nick/>
-          <Guard/>
+          <GuardProvider>
+            <Nick />
+            <Guard />
+          </GuardProvider>
         </Physics>
       </View>
     </>

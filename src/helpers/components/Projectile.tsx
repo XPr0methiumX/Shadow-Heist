@@ -1,6 +1,8 @@
 import { RigidBody } from "@react-three/rapier";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import { useFrame } from "@react-three/fiber";
+import { useGuardContext } from './GuardContext';
+import * as THREE from 'three';
 
 interface ProjectileProps {
   position: [number, number, number];
@@ -9,49 +11,49 @@ interface ProjectileProps {
 }
 
 export const Projectile = ({ position, velocity, onHit }: ProjectileProps) => {
-  const rb = useRef<any>(null);
+  const rb = useRef(null);
   const [hasHit, setHasHit] = useState(false);
+  const [isActive, setIsActive] = useState(true);
+  const { guardColliderRef: capsuleColliderRef } = useGuardContext();
 
+  // Timeout for removal after 3 seconds
   useEffect(() => {
-    if (rb.current) {
-      // Update collision checking every frame
-      const checkCollision = () => {
-        if (hasHit) return; // Avoid redundant checks after hit
-        
-        const world = rb.current?.world;
-        console.log(world)
-        if (world) {
-          const colliders = world.queryColliders(rb.current); // Custom function to query collisions
-          console.log(colliders)
-          colliders.forEach((collider: any) => {
-            if (collider.name === "GuardCollider") {
-              onHit();
-              setHasHit(true);
-            }
-          });
-        }
-      };
+    const timeoutId = setTimeout(() => {
+      setIsActive(false);
+    }, 3000); 
 
-      // Subscribe to frame updates
-      const interval = setInterval(checkCollision, 100); // Check every 100 ms
+    return () => clearTimeout(timeoutId);
+  }, []);
 
-      return () => clearInterval(interval);
+  useFrame(() => {
+    if (rb.current && capsuleColliderRef.current && isActive) {
+      const projectilePosition = rb.current.translation();
+      const colliderPosition = capsuleColliderRef.current.translation();
+
+      const projectileVec = new THREE.Vector3(projectilePosition.x, projectilePosition.y, projectilePosition.z);
+      const colliderVec = new THREE.Vector3(colliderPosition.x, colliderPosition.y, colliderPosition.z);
+
+      const distance = projectileVec.distanceTo(colliderVec);
+
+      if (distance < 0.8) {
+        setHasHit(true)
+        setIsActive(false); // Remove on hit
+        onHit(); 
+      }
     }
-  }, [onHit, hasHit]);
+  });
 
   return (
-    <RigidBody
-      gravityScale={0}
-      ref={rb}
-      position={position}
-      linearVelocity={velocity}
-      colliders="cuboid"
-      name="Projectile"
-    >
-      <mesh>
-        <capsuleGeometry args={[0.1, 0.5, 8]} />
-        <meshStandardMaterial color="red" />
-      </mesh>
-    </RigidBody>
+    // Conditionally render based on isActive
+    isActive && (
+      <RigidBody
+        ref={rb}
+        position={position}
+        linearVelocity={velocity}
+        colliders="cuboid"
+        gravityScale={0}
+        name="Projectile"
+      />
+    )
   );
 };
