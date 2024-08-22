@@ -107,7 +107,7 @@ export function Nick({ animation, ...props }: NickProps) {
 
   useEffect(() => {
     group.current.rotation.y = Math.PI
-  })
+  }, [])
 
   useEffect(() => {
     actions[animation]?.reset().fadeIn(0.24).play()

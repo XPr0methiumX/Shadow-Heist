@@ -44,8 +44,7 @@ export default function Page() {
       <View className='relative size-full'>
         <Common/>
         <Physics debug>
-          <Exhibition position={[0, -1, 0]} />
-          {isExhibitionReady && <Nick/>} 
+          <Nick/>
         </Physics>
       </View>
     </>

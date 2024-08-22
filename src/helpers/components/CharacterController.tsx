@@ -1,7 +1,7 @@
 import { Nick } from "@/components/canvas/models/Nick"
 import { RigidBody, CapsuleCollider } from "@react-three/rapier"
 import * as THREE from "three"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useFrame } from "@react-three/fiber"
 import { useControls } from "leva"
 import { useKeyboardControls, OrbitControls } from "@react-three/drei"
@@ -48,10 +48,12 @@ export const CharacterController = () => {
     const capsuleColliderRef = useRef(null)
     const orbitControlsRef = useRef<any>(null) // Ref to store the OrbitControls instance
     const [animation, setAnimation] = useState("idle")
-    const cameraOffset = useRef(new THREE.Vector3(0, 0.5, 2)) // Updated camera offset
+    const cameraOffset = useRef(new THREE.Vector3(0, 0.5, 3)) // Updated camera offset
     const [isOrbiting, setIsOrbiting] = useState(false) // State for orbit controls
+    const gunShootAnimationDuration = 0.6000000238418579
+    const [isShooting, setIsShooting] = useState(false)
 
-    useFrame(({camera}) => {
+    useFrame(({ camera, mouse, scene, raycaster }) => {
         if (rb.current) {
             const vel = new THREE.Vector3()
             const movement = new THREE.Vector3(0, 0, 0)
@@ -74,7 +76,7 @@ export const CharacterController = () => {
             }
 
             // Normalize movement vector
-            if (movement.length() > 1) movement.normalize()
+            if (movement.length() > 1 || movement.length() < 1) movement.normalize()
 
             // Calculate speed
             const speed = get().run ? RUN_SPEED : WALK_SPEED
@@ -99,15 +101,18 @@ export const CharacterController = () => {
             capsuleColliderRef.current.position = [0,-0.1,0]
 
             // Set animation based on speed and movement
-            if (vel.length() === 0 && !get().jump) {
-                setAnimation("idle")
-            } else if (get().run) {
-                setAnimation("run")
-            } else if (get().jump) {
-                setAnimation("jump") 
-            } else {
-                setAnimation("walking")
+            if(!isShooting) {
+                if (vel.length() === 0 && !get().jump) {
+                    setAnimation("idle")
+                } else if (get().run) {
+                    setAnimation("run")
+                } else if (get().jump) {
+                    setAnimation("jump") 
+                } else {
+                    setAnimation("walking")
+                }
             }
+
 
             // CAMERA
             const characterPosition = new THREE.Vector3()
@@ -121,8 +126,39 @@ export const CharacterController = () => {
                 camera.lookAt(characterPosition)
             } 
             orbitControlsRef.current.target.copy(characterPosition) // Set the target to the character's position
+
+            // --- Crosshair Movement ---
+            const crosshair = document.getElementById("crosshair")
+            if (crosshair) {
+                crosshair.style.transform = `translate(${
+                    mouse.x * window.innerWidth / 2
+                }px, ${-mouse.y * window.innerHeight / 2}px)`
+            }
+            // --- End Crosshair Movement ---
         }
     })
+
+    // Event listeners for shooting (Left mouse button only)
+    useEffect(() => {
+        const handleMouseDown = (e) => {
+        if (e.button === 0) {
+          setIsShooting(true)
+          setAnimation("gun shoot")
+        }
+        }
+
+        const handleMouseUp = () => {
+          setIsShooting(false)
+        }
+
+        window.addEventListener("mousedown", handleMouseDown)
+        window.addEventListener("mouseup", handleMouseUp)
+
+        return () => {
+        window.removeEventListener("mousedown", handleMouseDown)
+        window.removeEventListener("mouseup", handleMouseUp)
+        }
+    }, []) 
 
     return (
         <>

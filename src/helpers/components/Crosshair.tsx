@@ -1,13 +1,17 @@
-import React from 'react'
+import React from "react";
 
 export const Crosshair = () => {
   return (
-    <div
-      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 border-2 border-white rounded-full flex justify-center items-center"
-    >
-      <div className="w-1 h-1 bg-white rounded-full" />
-      <div className="w-0.5 h-4 bg-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-      <div className="w-4 h-0.5 bg-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+    <div id="crosshair" className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      {/* Vertical Line - Top */}
+      <div className="absolute w-1 h-2 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-2" /> 
+      {/* Vertical Line - Bottom */}
+      <div className="absolute w-1 h-2 bg-white top-1/2 left-1/2 -translate-x-1/2 translate-y-2" /> 
+
+      {/* Horizontal Line - Left */}
+      <div className="absolute w-2 h-1 bg-white top-1/2 left-1/2 -translate-x-3" /> 
+      {/* Horizontal Line - Right */}
+      <div className="absolute w-2 h-1 bg-white top-1/2 left-1/2 translate-x-1" /> 
     </div>
   )
 }
