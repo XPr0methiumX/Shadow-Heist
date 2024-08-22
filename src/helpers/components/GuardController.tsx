@@ -52,40 +52,40 @@ export const GuardController = () => {
             const movement = new THREE.Vector3(0, 0, 0)
 
             // Determine movement direction
-            if (get().forward) movement.z -= 1 // Move forward
-            if (get().backward) movement.z += 1 // Move backward
-            if (get().left) movement.x -= 1 // Move left
-            if (get().right) movement.x += 1 // Move right
+            // if (get().forward) movement.z -= 1 // Move forward
+            // if (get().backward) movement.z += 1 // Move backward
+            // if (get().left) movement.x -= 1 // Move left
+            // if (get().right) movement.x += 1 // Move right
 
             // Normalize movement vector
-            if (movement.length() > 1) movement.normalize()
+            // if (movement.length() > 1) movement.normalize()
 
-            // Calculate speed
-            const speed = WALK_SPEED
+            // // Calculate speed
+            // const speed = WALK_SPEED
 
-            // Update velocity based on movement direction
-            vel.x = movement.x * speed
-            vel.z = movement.z * speed
+            // // Update velocity based on movement direction
+            // vel.x = movement.x * speed
+            // vel.z = movement.z * speed
 
-            // Set the linear velocity of the rigid body
-            rb.current.setLinvel(vel, true)
+            // // Set the linear velocity of the rigid body
+            // rb.current.setLinvel(vel, true)
 
-            // Rotate character based on movement direction
-            if (movement.length() > 0) {
-                // Calculate target rotation
-                const characterRotationTarget = Math.atan2(-movement.x, -movement.z)
+            // // Rotate character based on movement direction
+            // if (movement.length() > 0) {
+            //     // Calculate target rotation
+            //     const characterRotationTarget = Math.atan2(-movement.x, -movement.z)
 
-                // Set rotation instantly but allow for smooth transition
-                nick.current.rotation.y = lerpAngle(nick.current.rotation.y, characterRotationTarget, ROTATION_SPEED)
+            //     // Set rotation instantly but allow for smooth transition
+            //     nick.current.rotation.y = lerpAngle(nick.current.rotation.y, characterRotationTarget, ROTATION_SPEED)
 
-                // Update capsule collider rotation
-                capsuleColliderRef.current.setRotation({ x: 0, y: nick.current.rotation.y, z: 0 })
-            }
+            //     // Update capsule collider rotation
+            //     capsuleColliderRef.current.setRotation({ x: 0, y: nick.current.rotation.y, z: 0 })
+            // }
 
-            // Update capsule collider position
-            const nickWorldPosition = new THREE.Vector3()
-            nick.current.getWorldPosition(nickWorldPosition)
-            capsuleColliderRef.current.setTranslation(nickWorldPosition)
+            // // Update capsule collider position
+            // const nickWorldPosition = new THREE.Vector3()
+            // nick.current.getWorldPosition(nickWorldPosition)
+            // capsuleColliderRef.current.setTranslation(nickWorldPosition)
 
             // Set animation based on speed and movement
             if (vel.length() === 0) {
@@ -104,13 +104,13 @@ export const GuardController = () => {
     })
 
     return (
-        <RigidBody colliders={false} lockRotations ref={rb}>
+        <RigidBody gravityScale={0} lockRotations ref={rb}>
             <group ref={container}>
                 <group ref={nick}>
-                    <Guard position={[0, -0.975, 0]} scale={1.2} animation={animation} />
+                    <Guard position={[0, -0.975, -5]} scale={1.2} animation={animation} />
                 </group>
             </group>
-            <CapsuleCollider ref={capsuleColliderRef} position={[0,-0.1,0]} args={[0.45, 0.42]} />
+            <CapsuleCollider ref={capsuleColliderRef} position={[0,-0.1,-5]} args={[0.45, 0.42]} name="GuardCollider"/>
         </RigidBody>
     )
 }

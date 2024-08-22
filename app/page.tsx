@@ -45,6 +45,7 @@ export default function Page() {
         <Common/>
         <Physics debug>
           <Nick/>
+          <Guard/>
         </Physics>
       </View>
     </>
