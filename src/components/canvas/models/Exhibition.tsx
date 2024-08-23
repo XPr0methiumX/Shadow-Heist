@@ -58,7 +58,7 @@ type GLTFResult = GLTF & {
 export function Exhibition(props: JSX.IntrinsicElements['group']) {
   const { nodes, materials } = useGLTF('/models/Exhibition-transformed.glb') as GLTFResult
   return (
-    <RigidBody type = "fixed" colliders = "trimesh">
+
       <group {...props} dispose={null}>
         <mesh geometry={nodes.Witch_01_Linum_low.geometry} material={materials['Material.004']} position={[9.187, 1.694, 7.09]} rotation={[Math.PI / 2, 0, 0]} scale={[2.708, 0.5, 2.708]} />
         <mesh geometry={nodes['art_2_Material_#32288_0'].geometry} material={materials['Material.001']} position={[-12.408, 2.981, 2.212]} rotation={[-Math.PI, 0, -Math.PI]} scale={0.01} />
@@ -83,6 +83,6 @@ export function Exhibition(props: JSX.IntrinsicElements['group']) {
         <mesh geometry={nodes['walls_C_Material_#32270_0'].geometry} material={materials.Material_32270} position={[10.867, -11.239, 1.407]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
         <mesh geometry={nodes['windowframes_Material_#32279_0'].geometry} material={materials.Material_32279} position={[-0.804, 3.262, 7.256]} rotation={[-Math.PI / 2, 0, 0]} scale={0.01} />
       </group>
-    </RigidBody>
+
   )
 }

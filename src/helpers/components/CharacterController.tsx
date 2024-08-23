@@ -32,16 +32,20 @@ const lerpAngle = (start, end, t) => {
 };
 
 export const CharacterController = () => {
-    const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED } = useControls("Character Control", {
-        WALK_SPEED: { value: 1.2, min: 0.1, max: 4, step: 0.1 },
-        RUN_SPEED: { value: 2.5, min: 0.2, max: 8, step: 0.1 },
-        ROTATION_SPEED: {
+    const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED } = useControls(
+        "Character Control",
+        {
+          WALK_SPEED: { value: 1.2, min: 0.1, max: 4, step: 0.1 },
+          RUN_SPEED: { value: 2.5, min: 0.2, max: 8, step: 0.1 },
+          ROTATION_SPEED: {
             value: degToRad(9),
             min: degToRad(0.1),
             max: degToRad(5),
             step: degToRad(0.1),
+          },
         },
-    });
+        { collapsed: true } // Collapse the control group to hide it initially
+    );
     const [, get] = useKeyboardControls();
     const orbitControlsRef = useRef<any>(null);
     const cameraOffset = useRef(new THREE.Vector3(0, 0.5, 3));

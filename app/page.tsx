@@ -41,15 +41,15 @@ export default function Page() {
     <>
       <View className='relative size-full'>
         <Common />
-        <Physics debug>
+        <Physics>
           <Exhibition position={[0,-1,0]}/>
           {isExhibitionReady && (
-          <CharacterProvider>
-            <GuardProvider>
-              <Nick />
-              <Guard />
-            </GuardProvider>
-          </CharacterProvider>
+            <CharacterProvider>
+              <GuardProvider>
+                <Nick />
+                <Guard />
+              </GuardProvider>
+            </CharacterProvider>
           )}
 
         </Physics>

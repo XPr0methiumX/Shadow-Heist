@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { Crosshair } from '@/helpers/components/Crosshair'
+import { Objective } from '@/helpers/components/Objective'
 
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
 const Layout = ({ children }) => {
@@ -33,6 +34,7 @@ const Layout = ({ children }) => {
         eventPrefix='client'
       />
       <Crosshair/>
+      <Objective/>
     </div>
   )
 }

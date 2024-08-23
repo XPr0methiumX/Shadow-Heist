@@ -30,16 +30,20 @@ const lerpAngle = (start: number, end: number, t: number) => {
 };
 
 export const GuardController = () => {
-  const { WALK_SPEED, ROTATION_SPEED, PUNCH_DISTANCE } = useControls("Guard Control", {
-    WALK_SPEED: { value: 1, min: 0.1, max: 4, step: 0.1 },
-    ROTATION_SPEED: {
-      value: degToRad(9),
-      min: degToRad(0.1),
-      max: degToRad(5),
-      step: degToRad(0.1),
+  const { WALK_SPEED, ROTATION_SPEED, PUNCH_DISTANCE } = useControls(
+    "Guard Control",
+    {
+      WALK_SPEED: { value: 1, min: 0.1, max: 4, step: 0.1 },
+      ROTATION_SPEED: {
+        value: degToRad(9),
+        min: degToRad(0.1),
+        max: degToRad(5),
+        step: degToRad(0.1),
+      },
+      PUNCH_DISTANCE: { value: 0.1, min: 0.1, max: 10, step: 0.1 },
     },
-    PUNCH_DISTANCE: { value: 0.1, min: 0.1, max: 10, step: 0.1 },
-  });
+    { collapsed: true } // Collapse the control group to hide it initially
+  );
 
   const { guardRef, guardColliderRef, animation, setAnimation, guard, punches, setPunches } = useGuardContext();
   const { nick, setCharacterAnimation, characterAnimation } = useCharacterContext();
