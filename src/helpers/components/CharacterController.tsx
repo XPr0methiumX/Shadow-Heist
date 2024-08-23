@@ -8,6 +8,7 @@ import { useKeyboardControls, OrbitControls } from "@react-three/drei";
 import { degToRad } from "three/src/math/MathUtils";
 import { Projectile } from "@/helpers/components/Projectile";
 import { useGuardContext } from "./GuardContext";
+import { useCharacterContext } from "./CharacterContext";
 
 const normalizeAngle = (angle) => {
     while (angle > Math.PI) angle -= 2 * Math.PI;
@@ -42,21 +43,16 @@ export const CharacterController = () => {
         },
     });
     const [, get] = useKeyboardControls();
-    const rb = useRef(null);
-    const container = useRef<THREE.Group>(null);
-    const nick = useRef<THREE.Group>(null);
-    const capsuleColliderRef = useRef(null);
     const orbitControlsRef = useRef<any>(null);
-    const [animation, setAnimation] = useState("idle");
     const cameraOffset = useRef(new THREE.Vector3(0, 0.5, 3));
     const [isOrbiting, setIsOrbiting] = useState(false);
     const [isShooting, setIsShooting] = useState(false);
     const [projectiles, setProjectiles] = useState<any[]>([]);
     const [shootCooldown, setShootCooldown] = useState(0);
-    const { guardRef, guardColliderRef, setAnimation: setGuardAnimation } = useGuardContext();
+    const { guardRef, guardColliderRef, setAnimation: setGuardAnimation, punches } = useGuardContext();
     const [guardState, setGuardState] = useState("ACTIVE");
     const [hits, setHits] = useState(0);
-    const [defeatedTime, setDefeatedTime] = useState<number | null>(null);
+    const { characterRef, characterColliderRef, characterAnimation: animation, setCharacterAnimation: setAnimation, container, nick } = useCharacterContext();
 
     const previousGuardPosition = useRef({ x: 0, y: -0.975, z: -5 });
     const previousGuardColliderPosition = useRef({ x: 0, y: -0.1, z: -5 });
@@ -121,7 +117,7 @@ export const CharacterController = () => {
     }, [guardState, hits]);
 
     useFrame(({ camera, mouse, clock }) => {
-        if (rb.current) {
+        if (characterRef.current) {
             const vel = new THREE.Vector3();
             const movement = new THREE.Vector3(0, 0, 0);
             if (get().forward) movement.z -= 1;
@@ -147,20 +143,20 @@ export const CharacterController = () => {
             vel.x = movement.x * speed;
             vel.z = movement.z * speed;
 
-            rb.current.setLinvel(vel, true);
+            characterRef.current.setLinvel(vel, true);
 
             if (movement.length() > 0) {
                 const characterRotationTarget = Math.atan2(-movement.x, -movement.z);
                 nick.current.rotation.y = lerpAngle(nick.current.rotation.y, characterRotationTarget, ROTATION_SPEED);
-                capsuleColliderRef.current.setRotation({ x: 0, y: nick.current.rotation.y, z: 0 });
+                characterColliderRef.current.setRotation({ x: 0, y: nick.current.rotation.y, z: 0 });
             }
 
             const nickWorldPosition = new THREE.Vector3();
             nick.current.getWorldPosition(nickWorldPosition);
-            capsuleColliderRef.current.setTranslation(nickWorldPosition);
-            capsuleColliderRef.current.position = [0, -0.1, 0];
+            characterColliderRef.current.setTranslation(nickWorldPosition);
+            characterColliderRef.current.position = [0, -0.1, 0];
 
-            if (!isShooting) {
+            if (!isShooting && punches<10) {
                 if (vel.length() === 0 && !get().jump) {
                     setAnimation("idle");
                 } else if (get().run) {
@@ -221,7 +217,7 @@ export const CharacterController = () => {
 
     return (
         <>
-            <RigidBody gravityScale={0} colliders={false} lockRotations ref={rb}>
+            <RigidBody gravityScale={0} colliders={false} ref={characterRef} lockRotations>
                 <OrbitControls
                     ref={orbitControlsRef}
                     onStart={() => setIsOrbiting(true)}
@@ -232,8 +228,8 @@ export const CharacterController = () => {
                     <group ref={nick}>
                         <Nick position={[0, -0.975, 0]} scale={1} animation={animation} />
                     </group>
+                    <CapsuleCollider ref={characterColliderRef} position={[0, -0.1, 0]} args={[0.45, 0.42]} name="CharacterCollider" />
                 </group>
-                <CapsuleCollider ref={capsuleColliderRef} position={[0, -0.1, 0]} args={[0.45, 0.42]} name="CapsuleCollider" />
             </RigidBody>
             {projectiles.map((proj, index) => (
                 <Projectile
@@ -241,12 +237,11 @@ export const CharacterController = () => {
                     position={proj.position}
                     velocity={proj.velocity}
                     onHit={() => {
-                        console.log('hit')
-                        setGuardAnimation("hit reaction")
-                        setHits((prevHits) => prevHits + 1);
+                        setGuardAnimation("hit reaction");
+                        setHits(prevHits => prevHits + 1);
                         setTimeout(() => {
-                            setGuardAnimation("idle")
-                        }, 600)
+                            setGuardAnimation("idle");
+                        }, 600);
                     }}
                 />
             ))}

@@ -1528,14 +1528,6 @@
     "@react-spring/shared" "~9.6.1"
     "@react-spring/types" "~9.6.1"
 
-"@react-spring/animated@~9.7.4":
-  version "9.7.4"
-  resolved "https://registry.yarnpkg.com/@react-spring/animated/-/animated-9.7.4.tgz#c712b2d3dc9312ef41aa8886818b539151bda062"
-  integrity sha512-7As+8Pty2QlemJ9O5ecsuPKjmO0NKvmVkRR1n6mEotFgWar8FKuQt2xgxz3RTgxcccghpx1YdS1FCdElQNexmQ==
-  dependencies:
-    "@react-spring/shared" "~9.7.4"
-    "@react-spring/types" "~9.7.4"
-
 "@react-spring/core@~9.6.1":
   version "9.6.1"
   resolved "https://registry.yarnpkg.com/@react-spring/core/-/core-9.6.1.tgz#ebe07c20682b360b06af116ea24e2b609e778c10"
@@ -1546,24 +1538,10 @@
     "@react-spring/shared" "~9.6.1"
     "@react-spring/types" "~9.6.1"
 
-"@react-spring/core@~9.7.4":
-  version "9.7.4"
-  resolved "https://registry.yarnpkg.com/@react-spring/core/-/core-9.7.4.tgz#0eaa0b5da3d18036d87a571f23079819d45a9f46"
-  integrity sha512-GzjA44niEJBFUe9jN3zubRDDDP2E4tBlhNlSIkTChiNf9p4ZQlgXBg50qbXfSXHQPHak/ExYxwhipKVsQ/sUTw==
-  dependencies:
-    "@react-spring/animated" "~9.7.4"
-    "@react-spring/shared" "~9.7.4"
-    "@react-spring/types" "~9.7.4"
-
 "@react-spring/rafz@~9.6.1":
   version "9.6.1"
   resolved "https://registry.yarnpkg.com/@react-spring/rafz/-/rafz-9.6.1.tgz#d71aafb92b78b24e4ff84639f52745afc285c38d"
   integrity sha512-v6qbgNRpztJFFfSE3e2W1Uz+g8KnIBs6SmzCzcVVF61GdGfGOuBrbjIcp+nUz301awVmREKi4eMQb2Ab2gGgyQ==
-
-"@react-spring/rafz@~9.7.4":
-  version "9.7.4"
-  resolved "https://registry.yarnpkg.com/@react-spring/rafz/-/rafz-9.7.4.tgz#d53aa45a8cb116b81b27ba29e0cc15470ccfd449"
-  integrity sha512-mqDI6rW0Ca8IdryOMiXRhMtVGiEGLIO89vIOyFQXRIwwIMX30HLya24g9z4olDvFyeDW3+kibiKwtZnA4xhldA==
 
 "@react-spring/shared@~9.6.1":
   version "9.6.1"
@@ -1572,24 +1550,6 @@
   dependencies:
     "@react-spring/rafz" "~9.6.1"
     "@react-spring/types" "~9.6.1"
-
-"@react-spring/shared@~9.7.4":
-  version "9.7.4"
-  resolved "https://registry.yarnpkg.com/@react-spring/shared/-/shared-9.7.4.tgz#8ac57505072c2aee33d77c47c4269347061a3377"
-  integrity sha512-bEPI7cQp94dOtCFSEYpxvLxj0+xQfB5r9Ru1h8OMycsIq7zFZon1G0sHrBLaLQIWeMCllc4tVDYRTLIRv70C8w==
-  dependencies:
-    "@react-spring/rafz" "~9.7.4"
-    "@react-spring/types" "~9.7.4"
-
-"@react-spring/three@^9.7.3":
-  version "9.7.4"
-  resolved "https://registry.yarnpkg.com/@react-spring/three/-/three-9.7.4.tgz#0912f7d667eceac82c8ace30544f09db4001535d"
-  integrity sha512-HKUhrrvWW7F/MAroObOloqcYyFqsUHp1ANIDvPVxk9cSh7veW7gQbJm2Sc7Ka+L4gVJEwSkS+MRfr8kk+sRZBw==
-  dependencies:
-    "@react-spring/animated" "~9.7.4"
-    "@react-spring/core" "~9.7.4"
-    "@react-spring/shared" "~9.7.4"
-    "@react-spring/types" "~9.7.4"
 
 "@react-spring/three@~9.6.1":
   version "9.6.1"
@@ -1605,11 +1565,6 @@
   version "9.6.1"
   resolved "https://registry.yarnpkg.com/@react-spring/types/-/types-9.6.1.tgz#913d3a68c5cbc1124fdb18eff919432f7b6abdde"
   integrity sha512-POu8Mk0hIU3lRXB3bGIGe4VHIwwDsQyoD1F394OK7STTiX9w4dG3cTLljjYswkQN+hDSHRrj4O36kuVa7KPU8Q==
-
-"@react-spring/types@~9.7.4":
-  version "9.7.4"
-  resolved "https://registry.yarnpkg.com/@react-spring/types/-/types-9.7.4.tgz#c849a7f062b5163d078e5e75f28c8f6acf91792e"
-  integrity sha512-iQVztO09ZVfsletMiY+DpT/JRiBntdsdJ4uqk3UJFhrhS8mIC9ZOZbmfGSRs/kdbNPQkVyzucceDicQ/3Mlj9g==
 
 "@react-three/drei@^9.92.7":
   version "9.109.5"
@@ -2672,15 +2627,6 @@ eastasianwidth@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/eastasianwidth/-/eastasianwidth-0.2.0.tgz#696ce2ec0aa0e6ea93a397ffcf24aa7840c827cb"
   integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
-
-ecctrl@^1.0.88:
-  version "1.0.88"
-  resolved "https://registry.yarnpkg.com/ecctrl/-/ecctrl-1.0.88.tgz#00f081be1e6a5c8cf3846462dc996d99dbc3ead3"
-  integrity sha512-ZTpvCz1QuE+FFz8FqnesNZkM2IWZWk3oaoFtlgmAc2i7knwQ9DXbB2pCwwov7sZx2l1jXA7fQPRAKfGwqdv0mQ==
-  dependencies:
-    "@react-spring/three" "^9.7.3"
-    leva "^0.9.34"
-    zustand "^4.4.7"
 
 ejs@^3.1.6:
   version "3.1.10"
@@ -4168,7 +4114,7 @@ language-tags@^1.0.9:
   dependencies:
     language-subtag-registry "^0.3.20"
 
-leva@^0.9.34, leva@^0.9.35:
+leva@^0.9.35:
   version "0.9.35"
   resolved "https://registry.yarnpkg.com/leva/-/leva-0.9.35.tgz#0d44c0954ba28434b50636906e389c61dd2cbfd9"
   integrity sha512-sp/ZbHGrrzM+eq+wIAc9X7C5qFagNERYkwaulKI/xy0XrDPV67jLUSSqTCFSoSc0Uk96j3oephYoO/6I8mZNuw==
@@ -5870,11 +5816,6 @@ use-sync-external-store@1.2.0:
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"
   integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
 
-use-sync-external-store@1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.2.tgz#c3b6390f3a30eba13200d2302dcdf1e7b57b2ef9"
-  integrity sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==
-
 util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
@@ -6289,10 +6230,3 @@ zustand@^4.3.2:
   integrity sha512-/BPMyLKJPtFEvVL0E9E9BTUM63MNyhPGlvxk1XjrfWTUlV+BR8jufjsovHzrtR6YNcBEcL7cMHovL1n9xHawEg==
   dependencies:
     use-sync-external-store "1.2.0"
-
-zustand@^4.4.7:
-  version "4.5.5"
-  resolved "https://registry.yarnpkg.com/zustand/-/zustand-4.5.5.tgz#f8c713041543715ec81a2adda0610e1dc82d4ad1"
-  integrity sha512-+0PALYNJNgK6hldkgDq2vLrw5f6g/jCInz52n9RTpropGgeAf/ioFUCdtsjCqu4gNhW9D01rUQBROoRjdzyn2Q==
-  dependencies:
-    use-sync-external-store "1.2.2"

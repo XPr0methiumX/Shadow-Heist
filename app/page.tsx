@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { Suspense, useEffect, useState } from 'react'
 import { Physics } from '@react-three/rapier'
 import { GuardProvider } from '@/helpers/components/GuardContext'
+import { CharacterProvider } from '@/helpers/components/CharacterContext'
 
 const Exhibition = dynamic(() => import ('@/components/canvas/models/Exhibition').then((model) => model.Exhibition), { ssr: false })
 const Guard = dynamic(() => import('@/helpers/components/GuardController').then((model) => model.GuardController), { ssr: false })
@@ -41,10 +42,16 @@ export default function Page() {
       <View className='relative size-full'>
         <Common />
         <Physics debug>
-          <GuardProvider>
-            <Nick />
-            <Guard />
-          </GuardProvider>
+          <Exhibition position={[0,-1,0]}/>
+          {isExhibitionReady && (
+          <CharacterProvider>
+            <GuardProvider>
+              <Nick />
+              <Guard />
+            </GuardProvider>
+          </CharacterProvider>
+          )}
+
         </Physics>
       </View>
     </>
