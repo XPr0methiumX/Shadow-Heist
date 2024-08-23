@@ -14,10 +14,10 @@ export const Projectile = ({ position, velocity, onHit }: ProjectileProps) => {
   const rb = useRef(null);
   const [hasHit, setHasHit] = useState(false);
   const [isActive, setIsActive] = useState(true);
-  const { guardColliderRef: capsuleColliderRef } = useGuardContext();
+  const { guardColliderRef } = useGuardContext();
 
-  // Timeout for removal after 3 seconds
   useEffect(() => {
+    // Timeout for removal after 3 seconds
     const timeoutId = setTimeout(() => {
       setIsActive(false);
     }, 3000); 
@@ -26,25 +26,26 @@ export const Projectile = ({ position, velocity, onHit }: ProjectileProps) => {
   }, []);
 
   useFrame(() => {
-    if (rb.current && capsuleColliderRef.current && isActive) {
+    const collider = guardColliderRef.current;
+    if (rb.current && collider && isActive && !hasHit) {
       const projectilePosition = rb.current.translation();
-      const colliderPosition = capsuleColliderRef.current.translation();
+      const colliderPosition = collider.translation();
 
-      const projectileVec = new THREE.Vector3(projectilePosition.x, projectilePosition.y, projectilePosition.z);
-      const colliderVec = new THREE.Vector3(colliderPosition.x, colliderPosition.y, colliderPosition.z);
-
-      const distance = projectileVec.distanceTo(colliderVec);
+      const distance = new THREE.Vector3(
+        projectilePosition.x - colliderPosition.x,
+        projectilePosition.y - colliderPosition.y,
+        projectilePosition.z - colliderPosition.z
+      ).length();
 
       if (distance < 0.8) {
-        setHasHit(true)
-        setIsActive(false); // Remove on hit
+        setHasHit(true);
+        setIsActive(false); // Safely deactivate the projectile
         onHit(); 
       }
     }
   });
 
   return (
-    // Conditionally render based on isActive
     isActive && (
       <RigidBody
         ref={rb}

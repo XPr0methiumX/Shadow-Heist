@@ -9,14 +9,12 @@ import { degToRad } from "three/src/math/MathUtils";
 import { Projectile } from "@/helpers/components/Projectile";
 import { useGuardContext } from "./GuardContext";
 
-// Normalize angle to be within the range of -PI to PI
 const normalizeAngle = (angle) => {
     while (angle > Math.PI) angle -= 2 * Math.PI;
     while (angle < -Math.PI) angle += 2 * Math.PI;
     return angle;
 };
 
-// Lerp for angles to smoothly transition between them
 const lerpAngle = (start, end, t) => {
     start = normalizeAngle(start);
     end = normalizeAngle(end);
@@ -48,54 +46,109 @@ export const CharacterController = () => {
     const container = useRef<THREE.Group>(null);
     const nick = useRef<THREE.Group>(null);
     const capsuleColliderRef = useRef(null);
-    const orbitControlsRef = useRef<any>(null); // Ref to store the OrbitControls instance
+    const orbitControlsRef = useRef<any>(null);
     const [animation, setAnimation] = useState("idle");
-    const cameraOffset = useRef(new THREE.Vector3(0, 0.5, 3)); // Updated camera offset
-    const [isOrbiting, setIsOrbiting] = useState(false); // State for orbit controls
+    const cameraOffset = useRef(new THREE.Vector3(0, 0.5, 3));
+    const [isOrbiting, setIsOrbiting] = useState(false);
     const [isShooting, setIsShooting] = useState(false);
     const [projectiles, setProjectiles] = useState<any[]>([]);
-    const [shootCooldown, setShootCooldown] = useState(0); // Cooldown for shooting
-    const { isActive, setIsActive } = useGuardContext();
+    const [shootCooldown, setShootCooldown] = useState(0);
+    const { guardRef, guardColliderRef, setAnimation: setGuardAnimation } = useGuardContext();
     const [guardState, setGuardState] = useState("ACTIVE");
     const [hits, setHits] = useState(0);
     const [defeatedTime, setDefeatedTime] = useState<number | null>(null);
+
+    const previousGuardPosition = useRef({ x: 0, y: -0.975, z: -5 });
+    const previousGuardColliderPosition = useRef({ x: 0, y: -0.1, z: -5 });
+    
+    const cleanUpGuardPhysics = () => {
+        // Save the current positions before cleaning up
+        if (guardRef.current) {
+            const guardPosition = guardRef.current.translation();
+            previousGuardPosition.current = {
+                x: guardPosition.x,
+                y: guardPosition.y,
+                z: guardPosition.z,
+            };
+        }
+        if (guardColliderRef.current) {
+            const guardColliderPosition = guardColliderRef.current.translation();
+            previousGuardColliderPosition.current = {
+                x: guardColliderPosition.x,
+                y: guardColliderPosition.y,
+                z: guardColliderPosition.z,
+            };
+        }
+    
+        // Move the guard and collider out of view
+        if (guardColliderRef.current) {
+            guardColliderRef.current.setTranslation({ x: 0, y: 1000, z: 0 }, true);
+        }
+        if (guardRef.current) {
+            guardRef.current.setTranslation({ x: 0, y: 1000, z: 0 }, true);
+        }
+    };
+    
+    const recoverGuardPhysics = () => {
+        // Restore the previous positions
+        if (guardColliderRef.current) {
+            guardColliderRef.current.setTranslation(previousGuardColliderPosition.current, true);
+            console.log('recovered guard collider');
+        }
+        if (guardRef.current) {
+            guardRef.current.setTranslation(previousGuardPosition.current, true);
+            console.log('recovered guard ref');
+        }
+    };
+
+    useEffect(() => {
+        if (guardState === "ACTIVE" && hits >= 15) {
+            setGuardState("DEFEATED");
+            console.log('setting guard state to DEFEATED');
+        }
+    
+        if (guardState === "DEFEATED") {
+            cleanUpGuardPhysics();
+            const timeout = setTimeout(() => {
+                recoverGuardPhysics();
+                setGuardState("ACTIVE");
+                setHits(0);
+                console.log('resetting guard state to ACTIVE');
+            }, 3000);
+    
+            return () => clearTimeout(timeout);
+        }
+    }, [guardState, hits]);
 
     useFrame(({ camera, mouse, clock }) => {
         if (rb.current) {
             const vel = new THREE.Vector3();
             const movement = new THREE.Vector3(0, 0, 0);
-            // Determine movement direction
-            if (get().forward) movement.z -= 1; // Move forward
-            if (get().backward) movement.z += 1; // Move backward
+            if (get().forward) movement.z -= 1;
+            if (get().backward) movement.z += 1;
             if (get().left) {
                 if (movement.z > 0) {
-                    movement.x += 1; // Invert left when moving backward
+                    movement.x += 1;
                 } else {
-                    movement.x -= 1; // Move left when moving forward
+                    movement.x -= 1;
                 }
             }
             if (get().right) {
                 if (movement.z > 0) {
-                    movement.x -= 1; // Invert right when moving backward
+                    movement.x -= 1;
                 } else {
-                    movement.x += 1; // Move right when moving forward
+                    movement.x += 1;
                 }
             }
 
-            // Normalize movement vector
             if (movement.length() > 1 || movement.length() < 1) movement.normalize();
 
-            // Calculate speed
             const speed = get().run ? RUN_SPEED : WALK_SPEED;
-
-            // Update velocity based on movement direction
             vel.x = movement.x * speed;
             vel.z = movement.z * speed;
 
-            // Set the linear velocity of the rigid body
             rb.current.setLinvel(vel, true);
 
-            // Rotate character based on movement direction
             if (movement.length() > 0) {
                 const characterRotationTarget = Math.atan2(-movement.x, -movement.z);
                 nick.current.rotation.y = lerpAngle(nick.current.rotation.y, characterRotationTarget, ROTATION_SPEED);
@@ -107,73 +160,44 @@ export const CharacterController = () => {
             capsuleColliderRef.current.setTranslation(nickWorldPosition);
             capsuleColliderRef.current.position = [0, -0.1, 0];
 
-            // Set animation based on speed and movement
-            if(!isShooting) {
+            if (!isShooting) {
                 if (vel.length() === 0 && !get().jump) {
                     setAnimation("idle");
                 } else if (get().run) {
                     setAnimation("run");
                 } else if (get().jump) {
-                    setAnimation("jump"); 
+                    setAnimation("jump");
                 } else {
                     setAnimation("walking");
                 }
             }
 
-            // CAMERA
             const characterPosition = new THREE.Vector3();
             container.current.getWorldPosition(characterPosition);
 
-            // Check if orbit controls are active
             if (!isOrbiting) {
-                // Calculate rotated camera offset based on character's rotation
                 const rotatedOffset = cameraOffset.current.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), nick.current.rotation.y);
                 camera.position.copy(characterPosition).add(rotatedOffset);
                 camera.lookAt(characterPosition);
-            } 
-            orbitControlsRef.current.target.copy(characterPosition); // Set the target to the character's position
+            }
+            orbitControlsRef.current.target.copy(characterPosition);
 
-            // --- Crosshair Movement ---
             const crosshair = document.getElementById("crosshair");
             if (crosshair) {
-                crosshair.style.transform = `translate(${
-                    mouse.x * window.innerWidth / 2
-                }px, ${-mouse.y * window.innerHeight / 2}px)`;
+                crosshair.style.transform = `translate(${mouse.x * window.innerWidth / 2}px, ${-mouse.y * window.innerHeight / 2}px)`;
             }
-            // --- End Crosshair Movement ---
 
-            // Projectile Handling
             if (isShooting && shootCooldown <= 0) {
                 const projectileStartPosition = nick.current.position.clone().add(new THREE.Vector3(0, 0, -1));
                 const projectileVelocity = new THREE.Vector3(0, 0, -5).applyQuaternion(nick.current.quaternion);
                 setProjectiles([...projectiles, { position: projectileStartPosition.toArray(), velocity: projectileVelocity.toArray() }]);
-                setShootCooldown(0.6); // Set cooldown period to 0.6 seconds
+                setShootCooldown(0.6);
             }
 
-            // Update cooldown
-            setShootCooldown((prev) => Math.max(0, prev - 1 / 60)); // Reduce cooldown based on frame rate
+            setShootCooldown((prev) => Math.max(0, prev - 1 / 60));
         }
-
-        switch (guardState) {
-            case "ACTIVE":
-              if (hits >= 15) {
-                setGuardState("DEFEATED"); // Transition to defeated state
-                setIsActive(false); 
-                setDefeatedTime(clock.getElapsedTime()); // Record defeat time
-              }
-              break;
-            case "DEFEATED":
-                if (defeatedTime !== null && clock.getElapsedTime() - defeatedTime >= 3) {
-                    setIsActive(true);
-                    setGuardState("ACTIVE");
-                    setHits(0);
-                    setDefeatedTime(null); // Reset defeatedTime
-                }
-                break;
-        } 
     });
 
-    // Event listeners for shooting (Left mouse button only)
     useEffect(() => {
         const handleMouseDown = (e) => {
             if (e.button === 0) {
@@ -217,8 +241,12 @@ export const CharacterController = () => {
                     position={proj.position}
                     velocity={proj.velocity}
                     onHit={() => {
-                        console.log("Hit!")
+                        console.log('hit')
+                        setGuardAnimation("hit reaction")
                         setHits((prevHits) => prevHits + 1);
+                        setTimeout(() => {
+                            setGuardAnimation("idle")
+                        }, 600)
                     }}
                 />
             ))}

@@ -41,9 +41,8 @@ export const GuardController = () => {
     },
   });
 
-  const { guardRef, guardColliderRef, isActive } = useGuardContext();
+  const { guardRef, guardColliderRef, animation, setAnimation } = useGuardContext();
   const [, get] = useKeyboardControls();
-  const [animation, setAnimation] = useState("idle");
 
   useFrame(({ camera }) => {
     if (guardRef.current) {
@@ -58,20 +57,15 @@ export const GuardController = () => {
       } else {
         setAnimation("walk");
       }
-
-      // CAMERA
-      // ...
     }
   });
 
   return (
-    isActive && (
     <RigidBody gravityScale={0} lockRotations ref={guardRef}>
       <group>
           <Guard position={[0, -0.975, -5]} scale={1.2} animation={animation} />
       </group>
       <CapsuleCollider ref={guardColliderRef} position={[0, -0.1, -5]} args={[0.45, 0.42]} name="GuardCollider" />
     </RigidBody>
-    )
   );
 };

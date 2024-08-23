@@ -3,8 +3,8 @@ import React, { createContext, useContext, useRef, useState } from 'react';
 interface GuardContextProps {
   guardRef: React.RefObject<any>;
   guardColliderRef: React.RefObject<any>;
-  isActive: boolean;
-  setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
+  animation: string;
+  setAnimation: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const GuardContext = createContext<GuardContextProps | undefined>(undefined);
@@ -12,10 +12,10 @@ const GuardContext = createContext<GuardContextProps | undefined>(undefined);
 export const GuardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const guardRef = useRef(null);
   const guardColliderRef = useRef(null);
-  const [isActive, setIsActive] = useState(true);
+  const [animation, setAnimation] = useState("idle");
 
   return (
-    <GuardContext.Provider value={{ guardRef, guardColliderRef, isActive, setIsActive }}>
+    <GuardContext.Provider value={{ guardRef, guardColliderRef, animation, setAnimation }}>
       {children}
     </GuardContext.Provider>
   );
