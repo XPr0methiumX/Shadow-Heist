@@ -9,7 +9,7 @@ Install Yarn
 ``` bash
 npm i -g yarn
 ``` 
-## Run Locally - CLI
+## Run/Contribute Locally - CLI
 
 Clone the project
 
