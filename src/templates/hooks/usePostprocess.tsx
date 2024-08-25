@@ -16,76 +16,82 @@ function getFullscreenTriangle() {
 // Basic shader postprocess based on the template https://gist.github.com/RenaudRohlinger/bd5d15316a04d04380e93f10401c40e7
 // USAGE: Simply call usePostprocess hook in your r3f component to apply the shader to the canvas as a postprocess effect
 const usePostProcess = () => {
-  const [{ dpr }, size, gl] = useThree((s) => [s.viewport, s.size, s.gl])
+  const { size, gl } = useThree()
+  const dpr = gl.getPixelRatio()
 
   const [screenCamera, screenScene, screen, renderTarget] = useMemo(() => {
-    let screenScene = new THREE.Scene()
+    const screenScene = new THREE.Scene()
     const screenCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
     const screen = new THREE.Mesh(getFullscreenTriangle())
     screen.frustumCulled = false
     screenScene.add(screen)
 
-    const renderTarget = new THREE.WebGLRenderTarget(512, 512, { samples: 4, encoding: gl.encoding })
-    renderTarget.depthTexture = new THREE.DepthTexture() // fix depth issues
+    const renderTarget = new THREE.WebGLRenderTarget(512, 512, {
+      samples: 4,
+    })
 
-    // use ShaderMaterial for linearToOutputTexel
-    screen.material = new THREE.RawShaderMaterial({
+    // Create the depth texture with width and height
+    renderTarget.depthTexture = new THREE.DepthTexture(512, 512)
+
+    // Create the shader material and assign it to the screen mesh
+    const material = new THREE.RawShaderMaterial({
       uniforms: {
         diffuse: { value: null },
         time: { value: 0 },
       },
       vertexShader: /* glsl */ `
-
         in vec2 uv;
         in vec3 position;
-				precision highp float;
+        precision highp float;
 
         out vec2 vUv;
-				void main() {
+        void main() {
           vUv = uv;
-					gl_Position = vec4( position, 1.0 );
-
+          gl_Position = vec4(position, 1.0);
         }
       `,
       fragmentShader: /* glsl */ `
-				precision highp float;
+        precision highp float;
         out highp vec4 pc_fragColor;
         uniform sampler2D diffuse;
         uniform float time;
         in vec2 vUv;
 
         // based on https://www.shadertoy.com/view/llGXzR
-        float radial(vec2 pos, float radius)
-        {
+        float radial(vec2 pos, float radius) {
             float result = length(pos)-radius;
-            result = fract(result*1.0);
+            result = fract(result * 1.0);
             float result2 = 1.0 - result;
             float fresult = result * result2;
-            fresult = pow((fresult*3.),7.);
+            fresult = pow((fresult * 3.), 7.);
             return fresult;
         }
 
-				void main() {
+        void main() {
           vec2 c_uv = vUv * 2.0 - 1.0;
           vec2 o_uv = vUv * 0.8;
-          float gradient = radial(c_uv, time*0.8);
-          vec2 fuv = mix(vUv,o_uv,gradient);
-					pc_fragColor = texture(diffuse, fuv);
+          float gradient = radial(c_uv, time * 0.8);
+          vec2 fuv = mix(vUv, o_uv, gradient);
+          pc_fragColor = texture(diffuse, fuv);
         }
       `,
       glslVersion: THREE.GLSL3,
     })
-    screen.material.uniforms.diffuse.value = renderTarget.texture
+
+    screen.material = material // Assign the material to the screen mesh
+    material.uniforms.diffuse.value = renderTarget.texture // Correctly assign the texture to the uniform
 
     return [screenCamera, screenScene, screen, renderTarget]
-  }, [gl.encoding])
+  }, []) // No need to include encoding as a dependency
+
   useEffect(() => {
     const { width, height } = size
-    const { w, h } = {
-      w: width * dpr,
-      h: height * dpr,
-    }
+    const w = width * dpr
+    const h = height * dpr
+
     renderTarget.setSize(w, h)
+    renderTarget.depthTexture.image.width = w // Update depth texture size
+    renderTarget.depthTexture.image.height = h
   }, [dpr, size, renderTarget])
 
   useFrame(({ scene, camera, gl }, delta) => {
@@ -93,10 +99,12 @@ const usePostProcess = () => {
     gl.render(scene, camera)
 
     gl.setRenderTarget(null)
-    if (screen) screen.material.uniforms.time.value += delta
+    const material = screen.material as THREE.RawShaderMaterial // Type assertion
+    material.uniforms.time.value += delta
 
     gl.render(screenScene, screenCamera)
   }, 1)
+
   return null
 }
 
