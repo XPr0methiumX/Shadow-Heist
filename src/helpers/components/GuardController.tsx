@@ -102,7 +102,7 @@ export const GuardController = () => {
                   clearInterval(intervalId);
                   setPunchInterval(null);
                   
-                  // Set dying animation and reload page after 5.8 seconds
+                  // Set dying animation and reload page after 5.3 seconds
                   setAnimation("idle");
                   setCharacterAnimation('dying');
                   setTimeout(() => {
