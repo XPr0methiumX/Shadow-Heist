@@ -3,6 +3,8 @@
 
 [Install Git](https://git-scm.com/downloads)
 
+[Install Node.js](https://nodejs.org/en/download/prebuilt-installer)
+
 Install Yarn
 ``` bash
 npm i -g yarn
